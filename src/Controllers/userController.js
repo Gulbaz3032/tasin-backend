@@ -29,6 +29,7 @@ export const registerUser = async (req, res) => {
       email,
       password: hashPassword,
       emailVerificationToken: token,
+      emailVerificationExpiry: Date.now() + 60 * 60 * 1000
     });
 
     if (!newUser) {
@@ -61,6 +62,44 @@ export const registerUser = async (req, res) => {
     });
   }
 };
+
+
+export const isVerify = async (req, res) => {
+  try {
+    const { token } = req.params;
+    if(!token) {
+      return res.status(404).json({
+        message: "Token not found",
+        success: false
+      });
+    }
+
+    const user = await User.findOne({ emailVerificationToken: token }).select("-password");
+    if(!user || user.emailVerificationExpiry < Date.now()) {
+      return res.status(401).json({
+        message: "Invalid token",
+        success: false
+      });
+    }
+
+    user.isVerified = true;
+    user.emailVerificationExpiry = undefined;
+    user.emailVerificationToken = undefined;
+
+    await user.save();
+
+    return res.status(200).json({
+      message: "Email verification successfully",
+      user: user
+    });
+
+  } catch (error) {
+     return res.status(500).json({
+      message: "Failed to verify user, Server error",
+      error: error.message,
+    });
+  }
+}
 
 export const loginUser = async (req, res) => {
   try {
