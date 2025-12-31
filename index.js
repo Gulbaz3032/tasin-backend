@@ -2,10 +2,12 @@ import express from "express"
 const app = express();
 import dotenv from "dotenv"
 import cors from "cors"
-import { dbConnection } from "./src/Utils/db";
+import { dbConnection } from "./src/Utils/db.js";
+import router from "./src/Routes/userRoutes.js";
 dotenv.config();
 
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const port = process.env.PORT 
 app.use(cors({
@@ -14,7 +16,10 @@ app.use(cors({
     credentials: true
 }));
 
-dbConnection
+dbConnection();
+
+// apis
+app.use("/api/v1", router)
 
 
 app.get("/", (req, res) => {
