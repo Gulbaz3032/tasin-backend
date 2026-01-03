@@ -148,3 +148,46 @@ export const loginUser = async (req, res) => {
 };
 
 export const logOut = async (req, res) => {};
+
+
+
+export const updateUser = async (req, res) => {
+  try {
+    const { id } = req.params;
+
+    if(!id) {
+      return res.status(404).json({
+        message: "User not found with this id",
+        success: false
+      });
+    }
+
+    const { name, email, password } = req.body;
+
+    const updateUser = await User.findByIdAndUpdate(
+      id,
+      { name, email, password },
+      {new: true}
+    );
+    if(!updateUser) {
+      return res.status(400).json({
+        message: "Failed to update user",
+        success: false
+      });
+    }
+
+    return res.status(200).json({
+      message: "User updated successfully",
+      success: true,
+      updateUser
+    })
+    
+
+  } catch (error) {
+    console.log("Failed to update user, server error", error);
+    return res.status(500).json({
+      message: "server error, failed to update the user",
+      success: false
+    })
+  }
+}
