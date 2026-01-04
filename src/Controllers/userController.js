@@ -155,6 +155,17 @@ export const loginUser = async (req, res) => {
   }
 };
 
+export const getProfile = async (req, res) => {
+  try {
+
+  } catch (error) {
+    return res.status(500).json({
+      message: "server error, failed to getprofile",
+      success: false
+    })
+  }
+}
+
 export const logOut = async (req, res) => {};
 
 
