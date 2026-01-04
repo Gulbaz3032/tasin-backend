@@ -158,7 +158,23 @@ export const loginUser = async (req, res) => {
 export const getProfile = async (req, res) => {
   try {
 
+    const user = await User.findOne({ email: req.user.email, _id: req.user._id}).select("-password");
+    if(!user) {
+      return res.status(401).json({
+        message: "user is not loggedin",
+        success: false
+      });
+    }
+
+    return res.status(200).json({
+      message: "Get profile successfully",
+      success: true,
+      user: user
+    })
+
+
   } catch (error) {
+
     return res.status(500).json({
       message: "server error, failed to getprofile",
       success: false
