@@ -4,10 +4,12 @@ import dotenv from "dotenv"
 import cors from "cors"
 import { dbConnection } from "./src/Utils/db.js";
 import router from "./src/Routes/userRoutes.js";
+import cookieParser from "cookie-parser";
 dotenv.config();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 const port = process.env.PORT 
 app.use(cors({
