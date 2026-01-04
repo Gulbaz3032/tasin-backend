@@ -139,13 +139,13 @@ export const loginUser = async (req, res) => {
       maxAge: 24 * 60 * 60 * 1000
     }
 
-    res.cookie("token", jwtToken, )
+    res.cookie("token", jwtToken, cookieOptions)
 
     return res.status(200).json({
       message: "User login successfully",
       success: true,
       token: jwtToken
-    })
+    });
 
   } catch (error) {
     return res.status(500).json({
