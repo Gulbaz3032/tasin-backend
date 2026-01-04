@@ -123,7 +123,7 @@ export const loginUser = async (req, res) => {
     if(!isMatched) {
       return res.status(400).json({
         success: false,
-        message: "Email or password or wrong"
+        message: "Email or Password is wrong"
       })
     }
 
