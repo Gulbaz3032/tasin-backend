@@ -9,8 +9,8 @@ router.post("/login", loginUser);
 router.get("/verify/:token", isVerify)
 router.get("/get-profeile", userLogIn, getProfile);
 router.post("/forgot-password", forgetPassword);
-router.post("/reset-password:/token", resetPassword);
-router.get("/logout", logOut);
+router.post("/reset-password/:token", resetPassword);
+router.get("/logout", userLogIn, logOut);
 
 
 
