@@ -232,46 +232,56 @@ export const forgetPassword = async (req, res) => {
 
 export const resetPassword = async (req, res) => {
   try {
-    const token = req.params?.token;
+    const { token } = req.params;
     const { password } = req.body;
 
-    if(!token || !password) {
-      return res.status(401).json({
-        message: "Invalid credentials",
-        success: false
+    if (!token || !password) {
+      return res.status(400).json({
+        message: "Token and password are required",
+        success: false,
       });
     }
 
-    const user = await User.findOne({resetVerificationToken});
+    const user = await User.findOne({
+      resetVerificationToken: token,
+    });
 
-     if(!user || user.resetVerificationExpiry < Date.now()) {
+    if (!user) {
       return res.status(404).json({
         message: "Invalid token",
-        success: false
+        success: false,
       });
     }
 
-    const hashPassword = await bcrypt.hash(password, 10);
-     user.password = hashPassword;
+    if (user.resetVerificationExpiry < Date.now()) {
+      return res.status(400).json({
+        message: "Token has expired",
+        success: false,
+      });
+    }
 
-     user.resetVerificationToken = undefined;
-     user.resetVerificationExpiry = undefined;
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.password = hashedPassword;
 
-     return res.status(200).json({
+    user.resetVerificationToken = undefined;
+    user.resetVerificationExpiry = undefined;
+
+    await user.save();
+
+    return res.status(200).json({
       message: "Successfully reset password",
       success: true,
-
-     })
-
-
+    });
 
   } catch (error) {
+    console.error(error);
     return res.status(500).json({
       message: "Server error, failed to reset password",
-      success: false
-    })
+      success: false,
+    });
   }
-}
+};
+
 
 export const logOut = async (req, res) => {
   try {
@@ -325,6 +335,17 @@ export const updateUser = async (req, res) => {
     console.log("Failed to update user, server error", error);
     return res.status(500).json({
       message: "server error, failed to update the user",
+      success: false
+    })
+  }
+}
+
+export const changePassword = async (req, res) => {
+  try {
+
+  } catch (error) {
+    return res.status(500).json({
+      message: "Server error, failed to change password",
       success: false
     })
   }
