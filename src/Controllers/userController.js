@@ -342,7 +342,24 @@ export const updateUser = async (req, res) => {
 
 export const changePassword = async (req, res) => {
   try {
+    const { password } = req.body;
+    if(!password){
+      return res.status(400).json({
+        message: "Password is required",
+        success: false
+      });
+    }
 
+    const newPassword = await bcrypt.hash(password, 10);
+    await user.save({
+      password: newPassword
+    });
+
+    return res.status(200).json({
+      message: "change password successfully",
+      success: false
+    })
+    
   } catch (error) {
     return res.status(500).json({
       message: "Server error, failed to change password",
