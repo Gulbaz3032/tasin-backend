@@ -66,6 +66,7 @@ export const registerUser = async (req, res) => {
 
 export const isVerify = async (req, res) => {
   try {
+    
     const { token } = req.params;
     if(!token) {
       return res.status(404).json({
