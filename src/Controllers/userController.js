@@ -130,7 +130,7 @@ export const loginUser = async (req, res) => {
     const jwtToken = await jwt.sign(
       { id: user._id},
       process.env.JWT_SECRET,
-      { expiresIn : "1d"}
+      { expiresIn : "20d"}
     );
 
     const cookieOptions = {
@@ -395,3 +395,45 @@ export const changePassword = async (req, res) => {
 }
 
 
+export const reSendEmailVerification = async (req, res) => {
+  try {
+
+    const token =  crypto.randomBytes(10).toString("hex")
+
+   
+
+    const user = await User.findOneAndUpdate({ email: req.user.email }, 
+      {
+        emailVerificationToken: token,
+        emailVerificationExpiry: Date.now() + 10 * 60 * 6000 
+      }
+    )
+
+    if(!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false
+      })
+    }
+
+     const options = {
+      email: req.user.email,
+      subject: "Email Verification",
+      route: "verify",
+      token: token
+    }
+
+    await sendingEmail(options);
+
+    return res.status(200).json({
+      message: "Resend Email Verification Successfully",
+      success: true,
+    })
+
+  } catch (error) {
+    return res.status(500).json({
+      message: "Failed to resend mail verification",
+      success: false
+    })
+  }
+}
