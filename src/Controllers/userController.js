@@ -340,43 +340,58 @@ export const updateUser = async (req, res) => {
   }
 }
 
-import bcrypt from "bcryptjs";
-import User from "../models/userModel.js";
-
 export const changePassword = async (req, res) => {
   try {
-    const { password } = req.body;
-    const userId = req.user.id; // assuming auth middleware
+    const { oldPassword, newPassword } = req.body;
 
-    if (!password) {
+    if(!oldPassword || !newPassword) {
       return res.status(400).json({
-        message: "Password is required",
-        success: false,
+        message: "Passowd is required",
+        success: false
       });
     }
 
-    const user = await User.findById(userId);
-    if (!user) {
+    const user = await User.findOne({
+      email: req.user.email,
+      _id: req.user._id
+    });
+
+
+    if(!user) {
       return res.status(404).json({
-        message: "User not found",
-        success: false,
+        message: "User not found", 
+        success: false
+      })
+    }
+
+    const isMatched = await bcrypt.compare(oldPassword, user.password);
+    if(!isMatched) {
+      return res.status(401).json({
+        message: "Old Password is Invalid",
+        success: false
       });
     }
 
-    const hashedPassword = await bcrypt.hash(password, 10);
-    user.password = hashedPassword;
+    const hashPassword = await bcrypt.hash(newPassword, 10);
+    user.password = hashPassword;
+     
     await user.save();
 
     return res.status(200).json({
       message: "Password changed successfully",
       success: true,
+      user: user
     });
 
-  } catch (error) {
+
+
+  }  catch (error) {
     console.error(error);
     return res.status(500).json({
       message: "Server error, failed to change password",
       success: false,
     });
   }
-};
+}
+
+
