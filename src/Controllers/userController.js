@@ -438,3 +438,15 @@ export const reSendEmailVerification = async (req, res) => {
     })
   }
 }
+
+export const getById = async (req, res) => {
+  try {
+    const { id } = req.params
+    
+  } catch (error) {
+    return res.status(500).json({
+      message: "server error, faild to get by id",
+      success: false
+    })
+  }
+}
