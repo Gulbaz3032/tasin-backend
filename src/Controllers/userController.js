@@ -441,33 +441,36 @@ export const reSendEmailVerification = async (req, res) => {
 
 export const getById = async (req, res) => {
   try {
-    const { id } = req.params
+    const { id } = req.params;
 
-    if(!id) {
+    if (!id) {
       return res.status(400).json({
-        message: "id is not found",
-        success: false
-      })
+        message: "ID is required",
+        success: false,
+      });
     }
 
-    const user = await User.findById();
-    if(!user) {
+    const user = await User.findById(id);
+
+    if (!user) {
       return res.status(404).json({
         message: "User not found",
-        success: false
-      })
+        success: false,
+      });
     }
 
     return res.status(200).json({
-      message: "User get successfuly",
-      success: false,
-      user: user
-    })
+      message: "User fetched successfully",
+      success: true,
+      user,
+    });
 
   } catch (error) {
+    console.error(error);
     return res.status(500).json({
-      message: "server error, faild to get by id",
-      success: false
-    })
+      message: "Server error, failed to get user by ID",
+      success: false,
+    });
   }
-}
+};
+
