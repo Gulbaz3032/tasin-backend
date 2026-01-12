@@ -442,7 +442,28 @@ export const reSendEmailVerification = async (req, res) => {
 export const getById = async (req, res) => {
   try {
     const { id } = req.params
-    
+
+    if(!id) {
+      return res.status(400).json({
+        message: "id is not found",
+        success: false
+      })
+    }
+
+    const user = await User.findById();
+    if(!user) {
+      return res.status(404).json({
+        message: "User not found",
+        success: false
+      })
+    }
+
+    return res.status(200).json({
+      message: "User get successfuly",
+      success: false,
+      user: user
+    })
+
   } catch (error) {
     return res.status(500).json({
       message: "server error, faild to get by id",
